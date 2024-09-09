@@ -1,17 +1,17 @@
 {-
 ---
 fulltitle: "Extra practice: Tree folds"
-date: September 20, 2023
 ---
 -}
 
 module TreeFolds where
 
+-- https://www.seas.upenn.edu/~cis5520/current/lectures/stub/03-trees/TreeFolds.html
 {-
 >
 -}
 
-import qualified Data.DList as DL
+import Data.DList qualified as DL
 import Test.HUnit
 
 {-
@@ -119,7 +119,10 @@ tinfixOrder1 = "infixOrder1a" ~: infixOrder1 exTree ~?= [1, 2, 4, 5, 9, 7]
        50005000
        (0.02 secs, 9,016,880 bytes)
 
-Now, let's inline the `DList` definitions to get rid of the uses of `(.)` and `id`.
+Now, let's inline the `DList` definitions above to get rid of the use of library functions.
+If you have completed the `DList` exercise you can rewrite your code from `infixOrder1`
+replacing the uses of `DL.toList`, `DL.empty`, `DL.singleton`, `DL.append` with your
+definitions in that file.
 -}
 
 infixOrder2 :: Tree Int -> [Int]
@@ -138,23 +141,9 @@ Foldable Trees
 Does this idea generalize to other forms of tree recursion? You betcha.
 
 Let's generalize the "base case" and "inductive step" of the definition above, separating
-the recursion from the specific operation of traversal. First, we identify these operators
-inside the definition of infixOrder.
--}
-
-infixOrder3 :: Tree Int -> [Int]
-infixOrder3 t = aux t b
-  where
-    b = []
-    f = (:)
-    aux = undefined
-
-{-
-       ghci> sum (infixOrder3 (bigLeftTree 10000))
-       50005000
-       (0.01 secs, 6,856,744 bytes)
-
-Then we abstract them to make a generic `foldr` function for trees.
+the recursion from the specific operation of traversal. Now turn your definition
+of `infixOrder2` into a generic definition of `foldrTree`, specialized to the operations
+that we need for an infix traversal:
 -}
 
 foldrTree :: (a -> b -> b) -> b -> Tree a -> b
@@ -164,11 +153,11 @@ foldrTree f b t = undefined
 >
 -}
 
-infixOrder4 :: Tree a -> [a]
-infixOrder4 = foldrTree (:) []
+infixOrder3 :: Tree a -> [a]
+infixOrder3 = foldrTree (:) []
 
 {-
-       ghci> sum (infixOrder4 (bigLeftTree 10000))
+       ghci> sum (infixOrder3 (bigLeftTree 10000))
        50005000
        (0.01 secs, 6,856,728 bytes)
 

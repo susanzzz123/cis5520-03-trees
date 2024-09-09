@@ -1,11 +1,12 @@
 {-
 ---
 fulltitle: "In class exercise: Difference lists"
-date:
 ---
 -}
 
 module DList where
+
+-- https://www.seas.upenn.edu/~cis5520/current/lectures/stub/03-trees/DList.html
 
 {-
 Motivation
@@ -27,7 +28,7 @@ Implementation
 --------------
 
 The key idea for difference lists is to represent them using a
-*function* from lists to lists. In otherwords, we will tell Haskell
+\*function* from lists to lists. In otherwords, we will tell Haskell
 that the type `[a] -> [a]` can be called a `DList a` for any type
 parameter `a`.
 -}
@@ -120,7 +121,7 @@ to automatically start ghci and load the module.
 If you'd like to see the difference between using (++) with regular lists and
 `append` using DLists, in GHCi you can type
 
-    *DList> :set +s
+    ghci> :set +s
 
 That will cause GHCi to give you timing and allocation information for each
 evaluation that you do. Then, after you complete this file, you can test out
@@ -135,10 +136,10 @@ micro1 = last (t 10000 "")
   where
     t :: Int -> [Char] -> [Char]
     t 0 l = l
-    t n l = t (n -1) (l ++ "s")
+    t n l = t (n - 1) (l ++ "s")
 
 {-
-    *DList> micro1
+    ghci> micro1
     's'
     (2.80 secs, 4,300,584,976 bytes)
 
@@ -150,10 +151,10 @@ micro2 = last (toList (t 10000 empty))
   where
     t :: Int -> DList Char -> DList Char
     t 0 l = l
-    t n l = t (n -1) (l `append` singleton 's')
+    t n l = t (n - 1) (l `append` singleton 's')
 
 {-
-     *DList> micro2
+     ghci> micro2
      's'
      (0.02 secs, 10,359,248 bytes)
 
@@ -191,7 +192,7 @@ command will force GHCi to evaluate the expression above and allocate the list
 into memory.  (We don't want our first benchmark below to include time for
 constructing this list---we only want to time the reverse operation.)
 
-    *DList> last bigList
+    ghci> last bigList
     10000
     (0.01 secs, 882,216 bytes)
 
@@ -202,7 +203,7 @@ micro3 :: Int
 micro3 = last (naiveReverse bigList)
 
 {-
-    *DList> micro3
+    ghci> micro3
 
 We can dress up the reverse function a bit using `foldr`, `flip` and the
 singleton section `(:[])`, but that doesn't really help. It's fundamentally
@@ -223,7 +224,7 @@ micro4 :: Int
 micro4 = last (ivoryTowerReverse bigList)
 
 {-
-    *DList> micro4
+    ghci> micro4
 
 Now watch what happens when we use a `DList` instead. Compare this definition
 with the `naiveReverse` one above. It's still easy to read. All we have done
@@ -240,7 +241,7 @@ micro5 :: Int
 micro5 = last (dlistReverse bigList)
 
 {-
-     *DList> micro5
+     ghci> micro5
 
 We can also replace the list operations in ivoryTowerReverse with their DList
 analogues, also a mechanical process.
@@ -253,7 +254,7 @@ micro6 :: Int
 micro6 = last (dlistIvoryTowerReverse bigList)
 
 {-
-     *DList> micro6
+     ghci> micro6
 
 (Of course, it is often better to use the standard library definition of
 common operations. How does the built-in operation, which has been optimized
@@ -264,6 +265,6 @@ micro7 :: Int
 micro7 = last (reverse bigList)
 
 {-
-     *DList> micro7
+     ghci> micro7
 
 -}
