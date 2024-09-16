@@ -100,7 +100,13 @@ will arrive by "two day shipping":
 -}
 
 twoBusinessDays :: Day -> Day
-twoBusinessDays d = undefined
+twoBusinessDays Monday = Wednesday
+twoBusinessDays Tuesday = Thursday
+twoBusinessDays Wednesday = Friday
+twoBusinessDays Thursday = Monday
+twoBusinessDays Friday = Tuesday
+twoBusinessDays Saturday = Tuesday
+twoBusinessDays Sunday = Tuesday
 
 {-
 Shapes
@@ -297,6 +303,8 @@ x1 = x point1
 When taking arguments that use records, we can either use the
 record selectors to access their components, or use pattern-matching.
 -}
+-- >>> distFromOrigin NewPoint {x = 1, y = 1}
+-- 1.4142135623730951
 
 distFromOrigin :: Point -> Double
 distFromOrigin NewPoint {x = px, y = py} = sqrt (px * px + py * py)
@@ -304,9 +312,11 @@ distFromOrigin NewPoint {x = px, y = py} = sqrt (px * px + py * py)
 {-
 Now, rewrite this function using selectors `x` and `y`:
 -}
+-- >>> distFromOrigin' NewPoint {x = 1, y = 1}
+-- 1.4142135623730951
 
 distFromOrigin' :: Point -> Double
-distFromOrigin' p = undefined
+distFromOrigin' p = sqrt (x p * x p  + y p * y p)
 
 {-
 Which version is easier to read? Opinions differ.
@@ -402,7 +412,8 @@ of `head` is not partial like the one for regular lists.)
 -- >>> safeHead oneTwoThree
 -- 1
 safeHead :: IntListNE -> Int
-safeHead = undefined
+safeHead (ISingle x) = x
+safeHead (ICons x _) = x
 
 {-
 We can define functions by recursion on `IntListNE`s too, of course. Write a function
@@ -412,7 +423,8 @@ to calculate the sum of a non-empty list of integers.
 -- >>> sumOfIntListNE oneTwoThree
 -- 6
 sumOfIntListNE :: IntListNE -> Int
-sumOfIntListNE = undefined
+sumOfIntListNE (ISingle x) = x
+sumOfIntListNE (ICons x xs) = x + sumOfIntListNE xs
 
 {-
 Polymorphic Datatypes
@@ -449,7 +461,7 @@ justTrue :: Maybe Bool
 justTrue = Just True
 
 justThree :: Maybe Int
-justThree = undefined
+justThree = Just 3
 
 {-
 A number of other polymorphic datatypes appear in the standard
@@ -516,7 +528,8 @@ We can write simple functions on trees by recursion:
 -- >>> treePlus (Branch 2 Empty Empty) 3
 -- Branch 5 Empty Empty
 treePlus :: Tree Int -> Int -> Tree Int
-treePlus = undefined
+treePlus Empty _ = Empty
+treePlus (Branch x l r) amount = Branch (x + amount) (treePlus l amount) (treePlus r amount)
 
 {-
 We can accumulate all of the elements in a tree into a list:
@@ -526,7 +539,7 @@ We can accumulate all of the elements in a tree into a list:
 -- [1,2,4,5,9,7]
 infixOrder :: Tree a -> [a]
 infixOrder Empty = []
-infixOrder (Branch x l r) = infixOrder l ++ [x] ++ infixOrder r
+infixOrder (Branch x l r) = infixOrder l ++ x : infixOrder r
 
 {-
 ... visiting the nodes in different orders ....
@@ -536,7 +549,8 @@ infixOrder (Branch x l r) = infixOrder l ++ [x] ++ infixOrder r
 -- [5,2,1,4,9,7]
 
 prefixOrder :: Tree a -> [a]
-prefixOrder = undefined
+prefixOrder Empty = []
+prefixOrder (Branch x l r) = x : prefixOrder l ++ prefixOrder r
 
 {-
 (NOTE: This is a simple way of defining a tree walk in Haskell, but it is not
