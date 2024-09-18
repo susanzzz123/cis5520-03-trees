@@ -206,7 +206,10 @@ Define `foldrTree` and `foldlTree` in terms of `foldTree`. (This is challenging!
 -}
 
 foldrTree' :: (a -> b -> b) -> b -> Tree a -> b
-foldrTree' = undefined
+foldrTree' f b t = foldTree (\c acc1 acc2 y -> acc2 (f c (acc1 y))) id t b
+
+infixOrder4 :: Tree a -> [a]
+infixOrder4 = foldrTree' (:) []
 
 tree1 :: Tree Int
 tree1 = Branch 1 (Branch 2 Empty Empty) (Branch 3 Empty Empty)
@@ -215,7 +218,7 @@ tfoldrTree' :: Test
 tfoldrTree' = "foldrTree'" ~: foldrTree' (+) 0 tree1 ~?= 6
 
 foldlTree' :: (b -> a -> b) -> b -> Tree a -> b
-foldlTree' = undefined
+foldlTree' f b t = foldTree (\c acc1 acc2 y -> acc1 (f (acc2 y) c)) id t b
 
 tfoldlTree' :: Test
 tfoldlTree' = "foldlTree'" ~: foldlTree' (+) 0 tree1 ~?= 6
